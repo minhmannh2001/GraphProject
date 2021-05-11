@@ -1,8 +1,11 @@
 package basiccomponentmodel;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,7 +13,7 @@ import java.util.ArrayList;
 
 public class Node {
 	
-	public static int    RADIUS = 15;
+	public static int    RADIUS = 25;
 	private String label;
 	private Point location;
 	private ArrayList<Edge> incidentEdges;
@@ -62,38 +65,54 @@ public class Node {
 	}
 	
 	public void draw(Graphics aPen) {
+		Graphics2D g2 = (Graphics2D)aPen;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	    // Draw a blue or red-filled circle around the center of the node
 	    if (selected)
-	        aPen.setColor(Color.red);
+	        g2.setColor(Color.red);
 	    else
-	        aPen.setColor(Color.blue);
-	    aPen.fillOval(location.x - RADIUS, location.y - RADIUS, RADIUS * 2, RADIUS * 2);
+	        g2.setColor(Color.blue);
+	    g2.fillOval(location.x - RADIUS, location.y - RADIUS, RADIUS * 2, RADIUS * 2);
 
 	    // Draw a black border around the circle
-	    aPen.setColor(Color.black);
-	    aPen.drawOval(location.x - RADIUS, location.y - RADIUS, RADIUS * 2, RADIUS * 2);
+	    g2.setColor(Color.black);
+	    g2.drawOval(location.x - RADIUS, location.y - RADIUS, RADIUS * 2, RADIUS * 2);
 
+	    g2.setColor(Color.white);
+	    Font font = new Font("Arial", Font.PLAIN, 15);
+	    g2.setFont(font);
 	    // Draw a label at the top right corner of the node
-	    aPen.drawString(label, location.x + RADIUS, location.y - RADIUS);
-
+	    //g2.drawString(label, location.x + RADIUS, location.y - RADIUS);
+	    g2.drawString(label, location.x - 3 * RADIUS / 20, location.y + 5 * RADIUS / 20);
+	    g2.setColor(Color.black);
 	}
 	
 	// Save the node to the given file.  Note that the incident edges are not saved.
-    public void saveTo(PrintWriter aFile) {
-        aFile.println(label);
-        aFile.println(location.x);
-        aFile.println(location.y);
-        aFile.println(selected);
+    public void saveTo(PrintWriter fileOut) {
+        fileOut.println(label);
+        fileOut.println(location.x);
+        fileOut.println(location.y);
+        fileOut.println(selected);
     }
 	
     // Load a node from the given file.  Note that the incident edges are not connected
-    public static Node loadFrom(BufferedReader aFile) throws IOException {
+    public static Node loadFrom(BufferedReader fileIn) throws IOException {
         Node   aNode = new Node();
 
-        aNode.setLabel(aFile.readLine());
-        aNode.setLocation(Integer.parseInt(aFile.readLine()),
-                          Integer.parseInt(aFile.readLine()));
-        aNode.setSelected(Boolean.valueOf(aFile.readLine()).booleanValue());
+        aNode.setLabel(fileIn.readLine());
+        aNode.setLocation(Integer.parseInt(fileIn.readLine()),
+                          Integer.parseInt(fileIn.readLine()));
+        aNode.setSelected(Boolean.valueOf(fileIn.readLine()).booleanValue());
         return aNode;
+    }
+    
+    public boolean equals(Object obj) {
+        if (obj instanceof Node) {
+            Node another = (Node) obj;
+            if (this.label.equals(another.label)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

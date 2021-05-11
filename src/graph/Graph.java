@@ -3,9 +3,11 @@ package graph;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import basiccomponentmodel.Edge;
 import basiccomponentmodel.Node;
@@ -89,10 +91,10 @@ public class Graph {
 		Graph myMap = new Graph("Ontario and Quebec");
 		Node     ottawa, toronto, kingston, montreal;
 		
-		myMap.addNode(ottawa = new Node("Ottawa", new Point(250,100)));
-	    myMap.addNode(toronto = new Node("Toronto", new Point(100,170)));
-	    myMap.addNode(kingston = new Node("Kingston", new Point(180,110)));
-	    myMap.addNode(montreal = new Node("Montreal", new Point(300,90)));
+		myMap.addNode(ottawa = new Node("1", new Point(250,100)));
+	    myMap.addNode(toronto = new Node("2", new Point(100,170)));
+	    myMap.addNode(kingston = new Node("3", new Point(180,110)));
+	    myMap.addNode(montreal = new Node("4", new Point(300,90)));
 	    myMap.addEdge(ottawa, toronto);
 	    myMap.addEdge(ottawa, montreal);
 	    myMap.addEdge(ottawa, kingston);
@@ -152,42 +154,96 @@ public class Graph {
 	}
 	
 	 // Save the graph to the given file.
-    public void saveTo(PrintWriter aFile) {
-        aFile.println(label);
+    public void saveTo(PrintWriter fileOut) {
+    	fileOut.println(label);
 
         // Output the nodes
-        aFile.println(nodes.size());
+    	fileOut.println(nodes.size());
         for (Node n:  nodes)
-            n.saveTo(aFile);
+            n.saveTo(fileOut);
 
         // Output the edges
         ArrayList<Edge> edges = getEdges();
-        aFile.println(edges.size());
+        fileOut.println(edges.size());
         for (Edge e:  edges)
-            e.saveTo(aFile);
+            e.saveTo(fileOut);
     }
 
     // Load a Graph from the given file.  After the nodes and edges are loaded,
     // We'll have to go through and connect the nodes and edges properly.
     
-    public static Graph loadFrom(BufferedReader aFile) throws IOException {
+    public static Graph loadFrom(BufferedReader fileIn) throws IOException {
         // Read the label from the file and make the graph
-        Graph    aGraph = new Graph(aFile.readLine());
+        Graph    graph = new Graph(fileIn.readLine());
 
         // Get the nodes and edges
-        int numNodes = Integer.parseInt(aFile.readLine());
+        int numNodes = Integer.parseInt(fileIn.readLine());
         for (int i=0; i<numNodes; i++)
-            aGraph.addNode(Node.loadFrom(aFile));
+            graph.addNode(Node.loadFrom(fileIn));
 
         // Now connect them with new edges
-        int numEdges = Integer.parseInt(aFile.readLine());
+        int numEdges = Integer.parseInt(fileIn.readLine());
         for (int i=0; i<numEdges; i++) {
-            Edge tempEdge = Edge.loadFrom(aFile);
-            Node start = aGraph.nodeAt(tempEdge.getStartNode().getLocation());
-            Node end = aGraph.nodeAt(tempEdge.getEndNode().getLocation());
-            aGraph.addEdge(start, end);
+            Edge tempEdge = Edge.loadFrom(fileIn);
+            Node start = graph.nodeAt(tempEdge.getStartNode().getLocation());
+            Node end = graph.nodeAt(tempEdge.getEndNode().getLocation());
+            graph.addEdge(start, end);
         }
 
-        return aGraph;
+        return graph;
     }
+    
+  //doc du lieu tu file text chuyen thanh graph
+    public static Graph readFile(String filename) throws IOException 
+    {
+        FileReader fileReader = new FileReader(filename);
+         
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        List<String> lines = new ArrayList<String>();
+        String line = null;
+        
+         // doc tung dong, luu vao trong lines
+        while ((line = bufferedReader.readLine()) != null) 
+        {
+            lines.add(line);
+        }
+         
+        bufferedReader.close();
+        
+       Graph graph = new Graph("Graph");
+       
+       //thiet lap graph
+        String a[] = lines.toArray(new String[lines.size()]);
+        for(int i=0; i < a.length; i++) {
+        	String[] tokens = a[i].split(" ");
+   
+        	Node start = new Node(tokens[0]);
+        	if(graph.nodes.contains(start) == false) {
+        		graph.addNode( new Node(tokens[0]));
+        	}
+        	for(int j=1; j < tokens.length; j++) {
+        		
+        		Node next = new Node(tokens[j]);
+        		if(graph.nodes.contains(next) == false) {
+        			
+        			graph.addNode(new Node(tokens[j]));
+        		}
+        		
+        		graph.addEdge(graph.nodes.get(graph.nodes.indexOf(start)), graph.nodes.get(graph.nodes.indexOf(next)));
+        	}
+        }
+        
+      //thiet lap location cho cac nodes, cho de nhin
+        int n = graph.nodes.size();
+        double theta = 2 * Math.PI / n;
+        for (int i = 0; i < n; ++i) {
+            double x = 400 + 200*Math.cos(theta * i);
+            double y = 250 + 200*Math.sin(theta * i);
+            Node node = graph.nodes.get(i);
+            node.setLocation(new Point((int)x,(int)y));
+            graph.nodes.set(i, node);
+            
+        }
+        return graph;
+    } 
 }
