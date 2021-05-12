@@ -51,20 +51,20 @@ public class Graph {
 		nodes.add(aNode);
 	}
 	
-	public void addEdge(Node start, Node end) {
+	public void addEdge(double weight , Node start, Node end) {
 		// First make the edge
-		Edge anEdge = new Edge(start, end);
+		Edge anEdge = new Edge(weight, start, end);
 		
 		// Now tell the nodes about the edge
 		start.addIncidentEdge(anEdge);
 		end.addIncidentEdge(anEdge);
 	}
 	
-	public void addEdge(String startLabel, String endLabel) {
+	public void addEdge(double weight, String startLabel, String endLabel) {
 	    Node start = nodeNamed(startLabel);
 	    Node end = nodeNamed(endLabel);
 	    if ((start != null) && (end != null))
-	        addEdge(start, end);
+	        addEdge(weight, start, end);
 	}
 	
 	public Node nodeNamed(String aLabel) {
@@ -89,16 +89,24 @@ public class Graph {
 	
 	public static Graph example() {
 		Graph myMap = new Graph("Ontario and Quebec");
-		Node     ottawa, toronto, kingston, montreal;
+		Node     ottawa, toronto, kingston, montreal, tokyo, hanoi, tphcm;
 		
 		myMap.addNode(ottawa = new Node("1", new Point(250,100)));
 	    myMap.addNode(toronto = new Node("2", new Point(100,170)));
 	    myMap.addNode(kingston = new Node("3", new Point(180,110)));
 	    myMap.addNode(montreal = new Node("4", new Point(300,90)));
-	    myMap.addEdge(ottawa, toronto);
-	    myMap.addEdge(ottawa, montreal);
-	    myMap.addEdge(ottawa, kingston);
-	    myMap.addEdge(kingston, toronto);
+	    myMap.addNode(tokyo = new Node("5", new Point(400, 300)));
+	    myMap.addNode(hanoi = new Node("6", new Point(350, 200)));
+	    myMap.addNode(tphcm = new Node("7", new Point(430, 230))); 
+	    myMap.addEdge(2 , ottawa, toronto);
+	    myMap.addEdge(3 , ottawa, montreal);
+	    myMap.addEdge(4 ,ottawa, kingston);
+	    myMap.addEdge(5 , kingston, toronto);
+	    myMap.addEdge(3, kingston, montreal);
+	    myMap.addEdge(2,  montreal, tokyo);
+	    myMap.addEdge(2, tokyo, toronto);
+	    myMap.addEdge(1, toronto, hanoi);
+	    myMap.addEdge(5, hanoi, tphcm);
 	    
 	    return myMap;
 	}
@@ -183,11 +191,11 @@ public class Graph {
 
         // Now connect them with new edges
         int numEdges = Integer.parseInt(fileIn.readLine());
-        for (int i=0; i<numEdges; i++) {
+        for (int i=0; i < numEdges; i++) {
             Edge tempEdge = Edge.loadFrom(fileIn);
             Node start = graph.nodeAt(tempEdge.getStartNode().getLocation());
             Node end = graph.nodeAt(tempEdge.getEndNode().getLocation());
-            graph.addEdge(start, end);
+            graph.addEdge(tempEdge.getWeight(), start, end);
         }
 
         return graph;
@@ -221,16 +229,16 @@ public class Graph {
         	if(graph.nodes.contains(start) == false) {
         		graph.addNode( new Node(tokens[0]));
         	}
-        	for(int j=1; j < tokens.length; j++) {
+        	
+        	double weight = Double.parseDouble(tokens[1]);
         		
-        		Node next = new Node(tokens[j]);
-        		if(graph.nodes.contains(next) == false) {
+        	Node next = new Node(tokens[2]);
+        	if(graph.nodes.contains(next) == false) {
         			
-        			graph.addNode(new Node(tokens[j]));
-        		}
-        		
-        		graph.addEdge(graph.nodes.get(graph.nodes.indexOf(start)), graph.nodes.get(graph.nodes.indexOf(next)));
+        		graph.addNode(new Node(tokens[2]));
         	}
+        		
+        		graph.addEdge(weight, graph.nodes.get(graph.nodes.indexOf(start)), graph.nodes.get(graph.nodes.indexOf(next)));
         }
         
       //thiet lap location cho cac nodes, cho de nhin

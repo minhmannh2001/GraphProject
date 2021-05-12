@@ -79,7 +79,7 @@ public class ContentPanel extends JPanel implements MouseListener, KeyListener, 
 	    // Check to see if we have let go on a node
 	    Node   aNode = aGraph.nodeAt(event.getPoint());
 	    if ((aNode != null) && (aNode != dragNode))
-	        aGraph.addEdge(dragNode, aNode);
+	        aGraph.addEdge(0, dragNode, aNode);
 	    // Refresh the panel either way
 	    dragNode = null;
 	    update();

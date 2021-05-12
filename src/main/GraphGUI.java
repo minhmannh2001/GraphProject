@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -21,12 +22,16 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import basiccomponentmodel.Edge;
+import basiccomponentmodel.Node;
 import graph.Graph;
+import pathfinding.Dijkstra;
+import pathfinding.Vert;
 
 @SuppressWarnings("serial")
 public class GraphGUI extends JFrame implements ActionListener {
 
-	private ContentPanel contentPanel;
+	public ContentPanel contentPanel;
 	
 	public GraphGUI(String title) {
 		this(title, new Graph());
@@ -62,8 +67,37 @@ public class GraphGUI extends JFrame implements ActionListener {
 			
 			@Override
 			public void run() {
-				new GraphGUI("Graph Path Finding Project").setVisible(true);;
+				GraphGUI graphGUI = new GraphGUI("Graph Path Finding Project", Graph.example());
+				graphGUI.setVisible(true);
+				Graph graph = graphGUI.contentPanel.getGraph();
+				ArrayList<Node> nodes = graph.getNodes();
+				Dijkstra pathFinding = new Dijkstra(graph.getNodes(), nodes.get(0));
+				ArrayList<Vert> shortestPath = pathFinding.getShortestPath(nodes.get(nodes.size() - 1));
+				ArrayList<Node> passedNodes = new ArrayList<Node>();
+				for (int i = 0; i < shortestPath.size(); i++) {
+					for (Node node : graph.getNodes())
+					{
+						if (node.getLabel().equals(shortestPath.get(i).getName())) {
+							passedNodes.add(node);
+						}
+					}
+				}
+				//for (int i = 0; i < passedNodes.size(); i++)
+				//	System.out.println(passedNodes.get(i).getLabel());
+				for (int i = 0; i < passedNodes.size() - 1; i++) {
+					for (Edge e : graph.getEdges()) {
+						if (e.isIt(passedNodes.get(i), passedNodes.get(i + 1)))
+							break;
+						System.out.println(e.getStartNode().getLabel() + "->" + e.getEndNode().getLabel());
+					}
+				}
+				System.out.println();
+				graphGUI.contentPanel.update();
+				System.out.println(pathFinding.getShortestDistance(nodes.get(nodes.size() - 1)));
+				//System.out.println(pathFinding.getShortestPath(nodes.get(nodes.size() - 2)));
+				System.out.println(shortestPath);
 			}
+			
 		});
 	}
 
@@ -137,7 +171,7 @@ public class GraphGUI extends JFrame implements ActionListener {
          
                 ImageIO.write(captureImage, format, new File(fileName));
          
-                System.out.printf("The screenshot was saved!");
+                System.out.println("The screenshot was saved!");
             } catch (IOException ex) {
                 System.err.println(ex);
             }

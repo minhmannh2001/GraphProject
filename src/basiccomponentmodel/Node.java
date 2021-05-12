@@ -81,7 +81,7 @@ public class Node {
 	    g2.setColor(Color.white);
 	    Font font = new Font("Arial", Font.PLAIN, 15);
 	    g2.setFont(font);
-	    // Draw a label at the top right corner of the node
+	    // Draw a label inside of the node
 	    //g2.drawString(label, location.x + RADIUS, location.y - RADIUS);
 	    g2.drawString(label, location.x - 3 * RADIUS / 20, location.y + 5 * RADIUS / 20);
 	    g2.setColor(Color.black);
