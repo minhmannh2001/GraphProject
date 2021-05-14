@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -43,7 +44,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	public ContentPanel(Graph g) {
 		aGraph = g;
-		setBackground(new Color(250, 250, 250));
+		setBackground(new Color(240, 240, 240));
+		this.setPreferredSize(new Dimension(600, 600));
 		setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		//addMouseListener(this);
 		addEventHandlers();
@@ -167,9 +169,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		    	int weight;
 		    	try {
 		    		weight = Integer.parseInt(JOptionPane.showInputDialog(this, "Weight:", "Edge Addition", JOptionPane.QUESTION_MESSAGE));
+		    		for (Edge edge : aGraph.getEdges())
+		    			if (edge.isExisted(dragNode, aNode))
+		    				throw new ExistenceException("This edge already exists!");
 		    		aGraph.addEdge(weight, dragNode, aNode);
 		    	} catch (NumberFormatException e) {
-		    		// Don't add this edge
+		    		JOptionPane.showMessageDialog(this, e.getMessage(), "Entered weight is not a number!", JOptionPane.ERROR_MESSAGE);
+		    	} catch (ExistenceException e) {
+		    		JOptionPane.showMessageDialog(this, e.getMessage(), e.getMessage(), JOptionPane.ERROR_MESSAGE);
 		    	}
 		    }
 		} else {
@@ -179,9 +186,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		    	int weight;
 		    	try {
 		    		weight = Integer.parseInt(JOptionPane.showInputDialog(this, "Weight:", "Edge Addition", JOptionPane.QUESTION_MESSAGE));
+		    		for (Edge edge : aGraph.getEdges())
+		    			if (edge.isExisted(dragNode, aNode))
+		    				throw new ExistenceException("This edge already exists!");
 		    		aGraph.addEdge(weight, dragNode_startEdgeMode, aNode);
 		    	} catch (NumberFormatException e) {
-		    		// Don't add this edge
+		    		JOptionPane.showMessageDialog(this, e.getMessage(), "Entered weight is not a number!", JOptionPane.ERROR_MESSAGE);
+		    	} catch (ExistenceException e) {
+		    		JOptionPane.showMessageDialog(this, e.getMessage(), e.getMessage(), JOptionPane.ERROR_MESSAGE);
 		    	}
 		    }
 		}
@@ -290,5 +302,12 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			}
 		}
 	};
+	
+	public class ExistenceException extends Exception {
+		
+		public ExistenceException(String errorMessage) {
+			super(errorMessage);
+		}
+	}
 	
 }

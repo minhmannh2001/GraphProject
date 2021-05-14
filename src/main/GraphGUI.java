@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -38,6 +39,7 @@ import pathfinding.Vert;
 public class GraphGUI extends JFrame implements ActionListener {
 
 	public ContentPanel contentPanel;
+	public ControlPanel controlPanel;
 	
 	public GraphGUI(String title) {
 		this(title, new Graph());
@@ -47,9 +49,13 @@ public class GraphGUI extends JFrame implements ActionListener {
 	public GraphGUI(String title, Graph graph) {
 		super(title);
 		contentPanel = new ContentPanel(graph);
+		controlPanel = new ControlPanel(graph, this);
+		this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
 		this.add(contentPanel);
+		this.setResizable(false);
+		this.add(controlPanel);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(900, 600);
+		this.setSize(1000, 600);
 		// Make the window appear in middle of screen
 		this.setLocationRelativeTo(null);
 		JMenuBar menuBar = new JMenuBar();
@@ -111,38 +117,9 @@ public class GraphGUI extends JFrame implements ActionListener {
 			public void run() {
 				GraphGUI graphGUI = new GraphGUI("Graph Path Finding Project", Graph.example());
 				graphGUI.setVisible(true);
-				Graph graph = graphGUI.contentPanel.getGraph();
-				ArrayList<Node> nodes = graph.getNodes();
-				Dijkstra pathFinding = new Dijkstra(graph.getNodes(), nodes.get(0));
-				ArrayList<Vert> shortestPath = pathFinding.getShortestPath(nodes.get(nodes.size() - 1));
-				ArrayList<Node> passedNodes = new ArrayList<Node>();
-				for (int i = 0; i < shortestPath.size(); i++) {
-					for (Node node : graph.getNodes())
-					{
-						if (node.getLabel().equals(shortestPath.get(i).getName())) {
-							passedNodes.add(node);
-						}
-					}
-				}
-				//for (int i = 0; i < passedNodes.size(); i++)
-				//	System.out.println(passedNodes.get(i).getLabel());
-				for (int i = 0; i < passedNodes.size() - 1; i++) {
-					for (Edge e : graph.getEdges()) {
-						if (e.isIt(passedNodes.get(i), passedNodes.get(i + 1)))
-							break;
-						System.out.println(e.getStartNode().getLabel() + "->" + e.getEndNode().getLabel());
-					}
-				}
-				System.out.println();
-				graphGUI.contentPanel.update();
-				System.out.println(pathFinding.getShortestDistance(nodes.get(nodes.size() - 1)));
-				//System.out.println(pathFinding.getShortestPath(nodes.get(nodes.size() - 2)));
-				System.out.println(shortestPath);
 			}
-			
 		});
 	}
-
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		JFileChooser fileChooser = new JFileChooser();
@@ -166,21 +143,25 @@ public class GraphGUI extends JFrame implements ActionListener {
 				}
 				BufferedReader fileIn = new BufferedReader(fileReader);
 				String[] options = {"Adjacency List", "Standardized Format"};
-				String option = (String)JOptionPane.showInputDialog(null, "Select a format: ", "Format Option", JOptionPane.OK_OPTION, null, options, "Standardized Format");
-				if (option == "Standardized Format") {
-					try {
-						contentPanel.setGraph(Graph.loadFrom(fileIn));
-						JOptionPane.showMessageDialog(null, "Loading file successfully !", "Message", JOptionPane.PLAIN_MESSAGE);
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(null, "Error Loading Graph From File !", "Error", JOptionPane.ERROR_MESSAGE);
+				try {
+					String option = (String)JOptionPane.showInputDialog(null, "Select a format: ", "Format Option", JOptionPane.OK_OPTION, null, options, "Standardized Format");
+					if (option == "Standardized Format") {
+						try {
+							contentPanel.setGraph(Graph.loadFrom(fileIn));
+							JOptionPane.showMessageDialog(null, "Loading file successfully !", "Message", JOptionPane.PLAIN_MESSAGE);
+						} catch (IOException e) {
+							JOptionPane.showMessageDialog(null, "Error Loading Graph From File !", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						try {
+							contentPanel.setGraph(Graph.readFile(file.toString()));
+							JOptionPane.showMessageDialog(null, "Loading file successfully !", "Message", JOptionPane.PLAIN_MESSAGE);
+						} catch (IOException e) {
+							JOptionPane.showMessageDialog(null, "Error Loading Graph From File !", "Error", JOptionPane.ERROR_MESSAGE);
+						}
 					}
-				} else {
-					try {
-						contentPanel.setGraph(Graph.readFile(file.toString()));
-						JOptionPane.showMessageDialog(null, "Loading file successfully !", "Message", JOptionPane.PLAIN_MESSAGE);
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(null, "Error Loading Graph From File !", "Error", JOptionPane.ERROR_MESSAGE);
-					}
+				} catch (NumberFormatException e) {
+					
 				}
 			}
         } else if (event.getActionCommand().equals("Save")) {

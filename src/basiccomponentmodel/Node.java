@@ -18,8 +18,8 @@ public class Node {
 	private Point location;
 	private ArrayList<Edge> incidentEdges;
 	private boolean selected;
-	private static Node startNode;
-	private static Node endNode;
+	public static Node startNode;
+	public static Node endNode;
 	
 	public boolean isSelected() { return selected; }
 	public void setSelected(boolean state) { selected = state; }

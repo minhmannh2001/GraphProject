@@ -107,7 +107,6 @@ public class Graph {
 	    myMap.addEdge(2, tokyo, toronto);
 	    myMap.addEdge(1, toronto, hanoi);
 	    myMap.addEdge(5, hanoi, tphcm);
-	    myMap.addEdge(1, ottawa, tphcm);
 	    
 	    return myMap;
 	}

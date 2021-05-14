@@ -215,4 +215,10 @@ public class Edge {
 
 	    return anEdge;
 	}
+	
+	public boolean isExisted(Node startNode, Node endNode) {
+		if (this.startNode.equals(startNode) && this.endNode.equals(endNode))
+			return true;
+		return false;
+	}
 }
