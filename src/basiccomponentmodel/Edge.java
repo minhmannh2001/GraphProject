@@ -1,11 +1,15 @@
 package basiccomponentmodel;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +23,7 @@ public class Edge {
 	public void setPassed(boolean state) {
 		passed = state;
 	}
+	public boolean passedSimulation = false;
 	
 	public boolean isIt(Node n1, Node n2) {
 		if (startNode.getLabel().equals(n1.getLabel()) && endNode.getLabel().equals(n2.getLabel())) {
@@ -48,7 +53,7 @@ public class Edge {
 	public double getWeight() { return this.weight; }
 	public Node getStartNode() { return startNode; }
 	public Node getEndNode() { return endNode; }
-	public void setWeight(String label) { this.weight = weight; }
+	public void setWeight(String label) { this.weight = Double.parseDouble(label); }
 	public void setStartNode(Node startNode) { this.startNode = startNode; }
 	public void setEndNode(Node endNode) { this.endNode = endNode; }
 	
@@ -66,125 +71,115 @@ public class Edge {
 	
 	// Draw the edge using the given Graphics object
 	public void draw(Graphics aPen) {
-		Graphics2D g2 = (Graphics2D)aPen;
+		Graphics2D g2 = (Graphics2D) aPen;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		int xDiff = Math.abs(startNode.getLocation().x - endNode.getLocation().x);
-        int yDiff = Math.abs(startNode.getLocation().y - endNode.getLocation().y);
-	    // Draw a black or red line from the center of the startNode to the center of the endNode
-	    if (selected) {
-	    	aPen.setColor(Color.RED);
-	        for (int i= -WIDTH/2; i<=WIDTH/2; i++) {
-	            if (yDiff > xDiff)
-	                g2.drawLine(startNode.getLocation().x+i, startNode.getLocation().y, endNode.getLocation().x+i, endNode.getLocation().y);
-	            else
-	                g2.drawLine(startNode.getLocation().x, startNode.getLocation().y+i, endNode.getLocation().x, endNode.getLocation().y+i);
-	        }
-	        double xA = startNode.getLocation().x;
-		    double yA = startNode.getLocation().y;
-		    double xB = endNode.getLocation().x;
-		    double yB = endNode.getLocation().y;
-		    g2.setColor(Color.black);
-		    Font font = new Font("Arial", Font.PLAIN, 15);
-		    g2.setFont(font);
-		    // Draw weight of an edge in the middle of it
-		    g2.drawString(weight + "", (int)((xA + xB)/2), (int)((yA + yB)/2));
-	        double distance = Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2));
-		    double t = Node.RADIUS / distance;
-		    double x1 = startNode.getLocation().x + t * (endNode.getLocation().x - startNode.getLocation().x);
-		    double y1 = startNode.getLocation().y + t * (endNode.getLocation().y - startNode.getLocation().y);
-		    Point endPoint = new Point((int)x1, (int)y1);
-		    double x2 = endNode.getLocation().x + t * (startNode.getLocation().x - endNode.getLocation().x);
-		    double y2 = endNode.getLocation().y + t * (startNode.getLocation().y - endNode.getLocation().y);
-		    Point startPoint = new Point((int)x2, (int)y2);
-		    drawArrowHead(g2, startPoint, endPoint, Color.RED);
-	    } else if (passed) { // </ If don't work, just delete this block of codes
-	    	aPen.setColor(Color.RED);
-	        for (int i= -WIDTH/2; i<=WIDTH/2; i++) {
-	            if (yDiff > xDiff)
-	                g2.drawLine(startNode.getLocation().x+i, startNode.getLocation().y, endNode.getLocation().x+i, endNode.getLocation().y);
-	            else
-	                g2.drawLine(startNode.getLocation().x, startNode.getLocation().y+i, endNode.getLocation().x, endNode.getLocation().y+i);
-	        }
-	        double xA = startNode.getLocation().x;
-		    double yA = startNode.getLocation().y;
-		    double xB = endNode.getLocation().x;
-		    double yB = endNode.getLocation().y;
-		    g2.setColor(Color.black);
-		    Font font = new Font("Arial", Font.PLAIN, 15);
-		    g2.setFont(font);
-		    // Draw weight of an edge in the middle of it
-		    g2.drawString(weight + "", (int)((xA + xB)/2), (int)((yA + yB)/2));
-	        double distance = Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2));
-		    double t = Node.RADIUS / distance;
-		    double x1 = startNode.getLocation().x + t * (endNode.getLocation().x - startNode.getLocation().x);
-		    double y1 = startNode.getLocation().y + t * (endNode.getLocation().y - startNode.getLocation().y);
-		    Point endPoint = new Point((int)x1, (int)y1);
-		    double x2 = endNode.getLocation().x + t * (startNode.getLocation().x - endNode.getLocation().x);
-		    double y2 = endNode.getLocation().y + t * (startNode.getLocation().y - endNode.getLocation().y);
-		    Point startPoint = new Point((int)x2, (int)y2);
-		    drawArrowHead(g2, startPoint, endPoint, Color.RED);
-	    } //                  />
-	    else
-	    {
-	        g2.setColor(new Color(36, 36, 36));
-	    	g2.drawLine(startNode.getLocation().x, startNode.getLocation().y, endNode.getLocation().x, endNode.getLocation().y);
-	    	// Draw a black line from the center of the startNode to the center of the endNode
-		    g2.setColor(new Color(36, 36, 36));
-		    double xA = startNode.getLocation().x;
-		    double yA = startNode.getLocation().y;
-		    double xB = endNode.getLocation().x;
-		    double yB = endNode.getLocation().y;
-		    Font font = new Font("Arial", Font.PLAIN, 15);
-		    g2.setFont(font);
-		    // Draw weight of an edge in the middle of it
-		    double theta = 2 * Math.PI / 5;
-	            
-		    g2.drawString(weight + "", (int)((xA + xB )/2 + 20*Math.cos(theta * 1)), (int)((yA + yB)/2 + 20*Math.sin(theta * 1)));
-		    for (int i= -WIDTH/2; i<=WIDTH/2; i++) {
-	            if (yDiff > xDiff)
-	                g2.drawLine(startNode.getLocation().x+i, startNode.getLocation().y, endNode.getLocation().x+i, endNode.getLocation().y);
-	            else
-	                g2.drawLine(startNode.getLocation().x, startNode.getLocation().y+i, endNode.getLocation().x, endNode.getLocation().y+i);
-	        }
-		    //g2.drawLine(startNode.getLocation().x, startNode.getLocation().y, endNode.getLocation().x, endNode.getLocation().y);
-		    double distance = Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2));
-		    double t = Node.RADIUS / distance;
-		    double x1 = startNode.getLocation().x + t * (endNode.getLocation().x - startNode.getLocation().x);
-		    double y1 = startNode.getLocation().y + t * (endNode.getLocation().y - startNode.getLocation().y);
-		    Point endPoint = new Point((int)x1, (int)y1);
-		    double x2 = endNode.getLocation().x + t * (startNode.getLocation().x - endNode.getLocation().x);
-		    double y2 = endNode.getLocation().y + t * (startNode.getLocation().y - endNode.getLocation().y);
-		    Point startPoint = new Point((int)x2, (int)y2);
-		    drawArrowHead(g2, startPoint, endPoint, new Color(36, 36, 36));
-	    }
+		// Draw a black or red line from the center of the startNode to the center of
+		// the endNode
+		String weightInStr = (int)weight + "";
+		Point2D startPoint = (Point2D) startNode.getLocation();
+		Point2D endPoint = (Point2D) endNode.getLocation();
+				
+		g2.setStroke(new BasicStroke(3));
+		Line2D line = new Line2D.Float(startPoint, endPoint);
+
+	    double dy = endPoint.getY() - startPoint.getY();
+		double dx = endPoint.getX() - startPoint.getX();
+		double theta = Math.atan2(dy, dx);
+
+		double xA = startPoint.getX();
+		double yA = startPoint.getY();
+		double xB = endPoint.getX();
+		double yB = endPoint.getY();
+		double dis = Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2));
+		double t = 8;
+		xA = xA + t * (yB - yA) / dis;
+		xB = xB + t * (yB - yA) / dis;
+		yA = yA + t * (xA - xB) / dis;
+		yB = yB + t * (xA - xB) / dis;		
+
+		if (selected) {// draw red line
+			g2.setColor(Color.RED);
+			g2.setStroke(new BasicStroke(10));
+			g2.draw(line);
+			Font font = new Font("Arial", Font.BOLD, 15);
+			g2.setFont(font);
+			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+			drawArrowHead(g2, startPoint, endPoint, Color.RED);
+		} else if (passed) { // </ If don't work, just delete this block of codes
+			aPen.setColor(Color.RED);
+			g2.setColor(Color.RED);
+			g2.setStroke(new BasicStroke(5));
+			g2.draw(line);
+			Font font = new Font("Arial", Font.BOLD, 15);
+			g2.setFont(font);
+			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+			drawArrowHead(g2, startPoint, endPoint, Color.RED);
+		} else if (this.passedSimulation == true) {
+			aPen.setColor(Color.RED);
+			g2.setColor(Color.RED);
+			g2.setStroke(new BasicStroke(5));
+			g2.draw(line);
+			Font font = new Font("Arial", Font.BOLD, 15);
+			g2.setFont(font);
+			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+			drawArrowHead(g2, startPoint, endPoint, Color.RED);
+		} else {
+			g2.setColor(new Color(36, 36, 36));
+			// Draw a black line from the center of the startNode to the center of the
+			// endNode
+			g2.draw(line);
+			Font font = new Font("Arial", Font.BOLD, 15);
+			g2.setFont(font);
+			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+			drawArrowHead(g2, startPoint, endPoint, new Color(36));
+		}
+	}
+
+	private void drawArrowHead(Graphics2D g2, Point2D startPoint, Point2D endPoint, Color color) {
+		Path2D arrow = new Path2D.Double();
+
+		double distance2Node = Math.sqrt(Math.pow((endPoint.getX() - startPoint.getX()), 2) + Math.pow((endPoint.getY() - startPoint.getY()), 2));
+		double t = Node.RADIUS / distance2Node;
+		double xStart = startPoint.getX() + t * (endPoint.getX() - startPoint.getX());
+		double yStart = startPoint.getY() + t * (endPoint.getY() - startPoint.getY());
+		double xEnd = endPoint.getX() + t * (startPoint.getX() - endPoint.getX());
+		double yEnd = endPoint.getY() + t * (startPoint.getY() - endPoint.getY());
+
+		double phi = Math.toRadians(30);
+		int barb = 20;
+		g2.setPaint(color);
+		double dy = yStart - yEnd;
+		double dx = xStart - xEnd;
+		double theta = Math.atan2(dy, dx);
+		double x, y, rho = theta + phi;
+		
+		double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		xStart = xEnd + 12 * dx / distance;
+		yStart = yEnd + 12 * dy / distance;
+		arrow.moveTo(xEnd, yEnd);
+		for (int j = 0; j < 2; j++) {
+			x = xEnd + barb * Math.cos(rho);
+			y = yEnd + barb * Math.sin(rho);
+			if (j == 0) {
+				arrow.lineTo(x, y);
+			} else if (j == 1) {
+				arrow.curveTo(xStart, yStart, xStart, yStart, x, y);
+			}
+			rho = theta - phi;
+		}
+		arrow.closePath();
+		g2.fill(arrow);
 	}
 	
-	private void drawArrowHead(Graphics2D g2, Point startNode, Point endNode, Color color)
-    {
-		int xDiff = Math.abs(startNode.getLocation().x - endNode.getLocation().x);
-        int yDiff = Math.abs(startNode.getLocation().y - endNode.getLocation().y);
-		double phi = Math.toRadians(40);
-	    int barb = 10;
-        g2.setPaint(color);
-        double dy = startNode.y - endNode.y;
-        double dx = startNode.x - endNode.x;
-        double theta = Math.atan2(dy, dx);
-        double x, y, rho = theta + phi;
-        for(int j = 0; j < 2; j++)
-        {
-            x = startNode.x - barb * Math.cos(rho);
-            y = startNode.y - barb * Math.sin(rho);
-            //g2.draw(new Line2D.Double(startNode.x, startNode.y, x, y));
-            for (int i= -WIDTH/2; i<=WIDTH/2; i++) {
-	            if (yDiff > xDiff)
-	                g2.drawLine(startNode.getLocation().x+i, startNode.getLocation().y, (int)(x + i), (int)y);
-	            else
-	                g2.drawLine(startNode.getLocation().x, startNode.getLocation().y+i, (int)x, (int)(y + i));
-	        }
-            rho = theta - phi;
-            
-        }
-    }
+	public static void drawRotateString(Graphics2D g2, double x, double y, double phi, String text) 
+	{    
+	    g2.translate((float)x,(float)y);
+	    g2.rotate(phi);
+	    g2.drawString(text,0,0);
+	    g2.rotate(-phi);
+	    g2.translate(-(float)x,-(float)y);
+	}
+
 	// Save the edge to the given file.  Note that the nodes themselves are not saved.
 	// We assume here that node locations are unique identifiers for the nodes.
 	public void saveTo(PrintWriter fileOut) {

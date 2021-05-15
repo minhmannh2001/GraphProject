@@ -1,5 +1,6 @@
 package basiccomponentmodel;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -70,6 +71,7 @@ public class Node {
 		Graphics2D g2 = (Graphics2D)aPen;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	    // Draw a blue or red-filled circle around the center of the node
+		g2.setStroke(new BasicStroke(3));
 	    if (selected) {
 	        g2.setColor(new Color(253, 165, 15));
 	    } else if (this == startNode) {
@@ -134,4 +136,5 @@ public class Node {
     public void setAsEndNode() {
     	endNode = this;
     }
+    
 }

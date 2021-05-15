@@ -27,6 +27,7 @@ public class SimulationController{
     public JScrollPane nextNodeList;
     public JTextField currentNodeTextField;
     public GraphGUI graphGUI;
+    private boolean stuck = false;
     
     public SimulationController(JButton comeButton, JButton backButton, GraphGUI graphGUI, JTextField currentNodeTextField, JScrollPane nextNodeListPanel) {
     	this.graphGUI = graphGUI;
@@ -116,7 +117,7 @@ public class SimulationController{
         		JOptionPane.showMessageDialog(null, "           You've come to end Node!", "Congratulation!", JOptionPane.PLAIN_MESSAGE);
         		System.out.println(passedNodes);
         	} else {
-        		backButton.setEnabled(false);
+        		stuck = true;
         		JOptionPane.showMessageDialog(null, "           There's no way!", "Attention", JOptionPane.ERROR_MESSAGE);
         	}
         } else {
@@ -149,6 +150,8 @@ public class SimulationController{
     
     public void back(JButton comeButton, JButton backButton) {
     	if (currentNode.equals(Node.endNode))
+    		comeButton.setEnabled(true);
+    	if (stuck == true)
     		comeButton.setEnabled(true);
     	
     	int passedNodesSize = passedNodes.size();

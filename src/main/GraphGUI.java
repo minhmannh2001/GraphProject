@@ -72,7 +72,12 @@ public class GraphGUI extends JFrame implements ActionListener {
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 		saveMenuItem.addActionListener(this);
 		saveMenuItem.setIcon(new ImageIcon("floppy.png"));
+		JMenuItem newGraph = new JMenuItem("New");
+		newGraph.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
+		newGraph.addActionListener(this);
+		newGraph.setIcon(new ImageIcon("new.png"));
 		fileMenu.add(loadMenuItem);
+		fileMenu.add(newGraph);
 		fileMenu.add(saveMenuItem);
 		JMenuItem screenCaptureItem = new JMenuItem("Screen Capture");
 		JMenuItem closeMenuButton = new JMenuItem("Close");
@@ -86,6 +91,8 @@ public class GraphGUI extends JFrame implements ActionListener {
 		screenCaptureItem.setIcon(new ImageIcon("picture.png"));
 		fileMenu.add(screenCaptureItem);
 		fileMenu.add(closeMenuButton);
+		
+		
 		JMenuItem helpMenuItem = new JMenuItem("Help");
 		helpMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		helpMenuItem.setIcon(new ImageIcon("help.png"));
@@ -147,14 +154,18 @@ public class GraphGUI extends JFrame implements ActionListener {
 					String option = (String)JOptionPane.showInputDialog(null, "Select a format: ", "Format Option", JOptionPane.OK_OPTION, null, options, "Standardized Format");
 					if (option == "Standardized Format") {
 						try {
-							contentPanel.setGraph(Graph.loadFrom(fileIn));
+							Graph openGraph = Graph.loadFrom(fileIn);
+							contentPanel.setGraph(openGraph);
+							controlPanel.setGraph(openGraph);
 							JOptionPane.showMessageDialog(null, "Loading file successfully !", "Message", JOptionPane.PLAIN_MESSAGE);
 						} catch (IOException e) {
 							JOptionPane.showMessageDialog(null, "Error Loading Graph From File !", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
 						try {
-							contentPanel.setGraph(Graph.readFile(file.toString()));
+							Graph openGraph = Graph.loadFrom(fileIn);
+							contentPanel.setGraph(openGraph);
+							controlPanel.setGraph(openGraph);
 							JOptionPane.showMessageDialog(null, "Loading file successfully !", "Message", JOptionPane.PLAIN_MESSAGE);
 						} catch (IOException e) {
 							JOptionPane.showMessageDialog(null, "Error Loading Graph From File !", "Error", JOptionPane.ERROR_MESSAGE);
@@ -184,21 +195,37 @@ public class GraphGUI extends JFrame implements ActionListener {
         	}
  
         } else if (event.getActionCommand().equals("Screen Capture")) {
-        	Rectangle rect = contentPanel.getBounds();
-        	 
-            try {
-                String format = "png";
-                String fileName = "ScreenCapture" + "." + format;
-                BufferedImage captureImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-                contentPanel.paint(captureImage.getGraphics());
-         
-                ImageIO.write(captureImage, format, new File(fileName));
-         
-                System.out.println("The screenshot was saved!");
-            } catch (IOException ex) {
-                System.err.println(ex);
-            }
+        	int response = fileChooser.showSaveDialog(null);
+        	if (response == JFileChooser.APPROVE_OPTION) {
+        		
+        		File file;
+        		PrintWriter fileOut = null;
+        		// Get the save location we've chosen
+        		file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+        		
+	        	Rectangle rect = contentPanel.getBounds();
+	        	 
+	            try {
+	                String format = "png";
+	                //String fileName = "ScreenCapture" + "." + format;
+	                BufferedImage captureImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+	                contentPanel.paint(captureImage.getGraphics());
+	         
+	                ImageIO.write(captureImage, format, file);
+	         
+	                JOptionPane.showMessageDialog(null, "The screenshot was saved!", "Message", JOptionPane.PLAIN_MESSAGE);
+	            } catch (IOException ex) {
+	                System.err.println(ex);
+	            }
+        	}
+        } else if (event.getActionCommand().equals("New")) {
+        	Graph newGraph = new Graph("New graph");
+			contentPanel.setGraph(newGraph);
+			controlPanel.setGraph(newGraph);
+			JOptionPane.showMessageDialog(null, "                           New graph!", "Message", JOptionPane.PLAIN_MESSAGE);
+		
         }
+		
 		
 	}
 	
