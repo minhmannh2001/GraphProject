@@ -40,7 +40,7 @@ public class GraphGUI extends JFrame implements ActionListener {
 
 	public ContentPanel contentPanel;
 	public ControlPanel controlPanel;
-	
+	public static boolean simulationMode = false;
 	public GraphGUI(String title) {
 		this(title, new Graph());
 	}

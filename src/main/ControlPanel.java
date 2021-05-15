@@ -45,6 +45,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 	}
 	
 	public ControlPanel(Graph graph, GraphGUI graphGUI) {
+		GraphGUI.simulationMode = false;
 		this.graph = graph;
 		this.graphGUI = graphGUI;
 		this.setLayout(null);
@@ -100,6 +101,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 				this.remove(startSimulationButton);
 				this.remove(cautionLabel1);
 				this.remove(cautionLabel2);
+				GraphGUI.simulationMode = true;
 				JLabel currentNodeLabel = new JLabel("Current Node:");
 				currentNodeLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
 				currentNodeLabel.setBounds(75, 110, 150, 30);
@@ -209,6 +211,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		}
 		
 		if (e.getActionCommand() == "Simulation") {
+		
 			graphGUI.getContentPane().remove(this);
 			graphGUI.getContentPane().add(new ControlPanel(graph, graphGUI, true));
 			graphGUI.repaint();

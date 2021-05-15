@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import main.GraphGUI;
+
 public class Node {
 	
 	public static int    RADIUS = 25;
@@ -21,6 +23,8 @@ public class Node {
 	private boolean selected;
 	public static Node startNode;
 	public static Node endNode;
+	public boolean isNextNodeSimulationStatus = false;
+	public boolean passedSimulationMode = false; // If we go through this node in simulation mode
 	
 	public boolean isSelected() { return selected; }
 	public void setSelected(boolean state) { selected = state; }
@@ -71,20 +75,38 @@ public class Node {
 		Graphics2D g2 = (Graphics2D)aPen;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	    // Draw a blue or red-filled circle around the center of the node
-		g2.setStroke(new BasicStroke(3));
-	    if (selected) {
+		g2.setStroke(new BasicStroke((float) 2.5));
+		if (passedSimulationMode == true && this != startNode) {
+			g2.setColor(new Color(89, 192, 81));
+		} else if (selected) {
 	        g2.setColor(new Color(253, 165, 15));
 	    } else if (this == startNode) {
 	    	g2.setColor(new Color(89, 192, 81));
 	    } else if (this == endNode) {
 	    	g2.setColor(new Color(200, 63, 73));
+	    } else if (GraphGUI.simulationMode == true) // It is not the nextNode, so we just fade it out to concentrate on nextNodes
+	    {	
+	    	if (isNextNodeSimulationStatus == false)
+	    		g2.setColor(new Color(207, 238, 250));
+	    	else 
+	    		g2.setColor(new Color(48, 120, 238));
 	    } else {
-	        g2.setColor(new Color(48, 120, 238));
+	        g2.setColor(new Color(48, 120, 238)); // Blue - Normal
 	    }
 	    g2.fillOval(location.x - RADIUS, location.y - RADIUS, RADIUS * 2, RADIUS * 2);
 
 	    // Draw a black border around the circle
-	    g2.setColor(Color.BLACK);
+	    if (this == startNode) {
+	    	g2.setColor(Color.BLACK);
+	    } else if (this == endNode) {
+	    	g2.setColor(Color.BLACK);
+	    } else if (GraphGUI.simulationMode == true) { 
+	    	if (isNextNodeSimulationStatus == true || passedSimulationMode == true)
+	    		g2.setColor(Color.BLACK);
+	    	else 
+	    		g2.setColor(new Color(211, 211, 211));
+	    } else
+	    	g2.setColor(Color.BLACK);
 	    g2.drawOval(location.x - RADIUS, location.y - RADIUS, RADIUS * 2, RADIUS * 2);
 
 	    g2.setColor(new Color(250, 250, 250));
