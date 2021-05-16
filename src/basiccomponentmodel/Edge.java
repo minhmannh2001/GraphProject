@@ -34,7 +34,7 @@ public class Edge {
 	}
 	
 	// If we've already gone through this edge, passed equals true
-	private boolean passed; 
+	public boolean passed; 
 	public void setPassed(boolean state) {
 		passed = state;
 	}
@@ -129,7 +129,7 @@ public class Edge {
 			g2.setFont(font);
 			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
 			drawArrowHead(g2, startPoint, endPoint, Color.RED);
-		} else if (this.passedSimulation == true) {
+		} else if (this.passedSimulation == true && GraphGUI.simulationMode == true) {
 			aPen.setColor(Color.RED);
 			g2.setColor(Color.RED);
 			g2.setStroke(new BasicStroke(5));

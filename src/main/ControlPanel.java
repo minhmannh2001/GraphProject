@@ -32,13 +32,13 @@ public class ControlPanel extends JPanel implements ActionListener {
 	private JButton findButton;
 	private JButton simulationButton;
 	private Graph graph;
-	private GraphGUI graphGUI;
+	public static GraphGUI graphGUI; // need it
 	private JTextArea textArea;
-	private JScrollPane nextNodeListPanel;
-	private SimulationController simulationController;
-	private JButton comeButton;
-	private JButton backButton;
-	public JTextField currentNode;
+	public static JScrollPane nextNodeListPanel; // need it
+	public static SimulationController simulationController; // Need it
+	public static JButton comeButton; // need it
+	public static JButton backButton; // need it
+	public static JTextField currentNodeTextField; // need it
 	
 	public void setGraph(Graph g) { 
 		graph = g;  
@@ -46,8 +46,16 @@ public class ControlPanel extends JPanel implements ActionListener {
 	
 	public ControlPanel(Graph graph, GraphGUI graphGUI) {
 		GraphGUI.simulationMode = false;
+		// Clear all the draw we make in simulation mode - especially in this case, it's the edge we had gone through
+		for (Edge edge : graph.getEdges()) {
+			edge.passedSimulation = false;
+			edge.passed = false;
+		}
+		for (Node node : graph.getNodes()) {
+			node.passedSimulationMode = false;
+		}
 		this.graph = graph;
-		this.graphGUI = graphGUI;
+		ControlPanel.graphGUI = graphGUI;
 		this.setLayout(null);
 		setBackground(new Color(221, 223, 227));
 		setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -105,15 +113,15 @@ public class ControlPanel extends JPanel implements ActionListener {
 				JLabel currentNodeLabel = new JLabel("Current Node:");
 				currentNodeLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
 				currentNodeLabel.setBounds(75, 110, 150, 30);
-				currentNode = new JTextField();
-				currentNode.setBounds(78, 150, 100, 30);
-				currentNode.setEnabled(false);
-				currentNode.setBackground(new Color(208, 240, 192));
-				currentNode.setBorder(BorderFactory.createLoweredBevelBorder());
-				currentNode.setText(Node.startNode.getLabel());
-				currentNode.setFont(new Font("Tahoma", Font.PLAIN, 17));
-				currentNode.setHorizontalAlignment(JTextField.CENTER);
-				currentNode.setSelectedTextColor(Color.WHITE);
+				currentNodeTextField = new JTextField();
+				currentNodeTextField.setBounds(78, 150, 100, 30);
+				currentNodeTextField.setEnabled(false);
+				currentNodeTextField.setBackground(new Color(208, 240, 192));
+				currentNodeTextField.setBorder(BorderFactory.createLoweredBevelBorder());
+				currentNodeTextField.setText(Node.startNode.getLabel());
+				currentNodeTextField.setFont(new Font("Tahoma", Font.PLAIN, 17));
+				currentNodeTextField.setHorizontalAlignment(JTextField.CENTER);
+				currentNodeTextField.setSelectedTextColor(Color.WHITE);
 				JLabel nextNodesLabel = new JLabel("Next Nodes:");
 				nextNodesLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
 				nextNodesLabel.setBounds(85, 190, 150, 30);
@@ -134,7 +142,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 				backButton.addActionListener(this);
 				backButton.setEnabled(false);
 				add(currentNodeLabel);
-				add(currentNode);
+				add(currentNodeTextField);
 				add(nextNodesLabel);
 				add(nextNodeListPanel);
 				add(comeButton);
@@ -144,7 +152,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 					
 				// Simulation
 
-				simulationController = new SimulationController(comeButton, backButton, graphGUI, currentNode, nextNodeListPanel);
+				simulationController = new SimulationController(comeButton, backButton, graphGUI, currentNodeTextField, nextNodeListPanel);
 		
 			} else {
 				JOptionPane.showMessageDialog(null, "Set up start and end Node before simulation mode.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -211,7 +219,11 @@ public class ControlPanel extends JPanel implements ActionListener {
 		}
 		
 		if (e.getActionCommand() == "Simulation") {
-		
+			// What's this?
+			for (Edge edge : graph.getEdges()) {
+				edge.passedSimulation = false;
+				edge.passed = false;
+			}
 			graphGUI.getContentPane().remove(this);
 			graphGUI.getContentPane().add(new ControlPanel(graph, graphGUI, true));
 			graphGUI.repaint();
@@ -220,6 +232,7 @@ public class ControlPanel extends JPanel implements ActionListener {
 		
 		if (e.getActionCommand() == "X") {
 			graphGUI.getContentPane().remove(this);
+			//graphGUI.simulationMode = false;
 			graphGUI.getContentPane().add(new ControlPanel(graph, graphGUI));
 			graphGUI.repaint();
 			graphGUI.revalidate();

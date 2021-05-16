@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 import basiccomponentmodel.Edge;
 import basiccomponentmodel.Node;
 import graph.Graph;
+import simulation.SimulationController;
 
 @SuppressWarnings("serial")
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener {
@@ -292,12 +293,24 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			if (e.getActionCommand() == "Set as start") {
 				Node startNode = aGraph.nodeAt(startEdgeNodePosition);
 				startNode.setAsStartNode();
+				if (GraphGUI.simulationMode == true) {
+					for (Edge edge : aGraph.getEdges()) {
+						edge.setPassedInSimulationMode(false);
+					}
+					ControlPanel.simulationController = new SimulationController(ControlPanel.comeButton, ControlPanel.backButton, ControlPanel.graphGUI, ControlPanel.currentNodeTextField, ControlPanel.nextNodeListPanel);
+				}
 				update();
 			}
 			
 			if (e.getActionCommand() == "Set as end") {
 				Node endNode = aGraph.nodeAt(startEdgeNodePosition);
 				endNode.setAsEndNode();
+				if (GraphGUI.simulationMode == true) {
+					for (Edge edge : aGraph.getEdges()) {
+						edge.setPassedInSimulationMode(false);
+					}
+					ControlPanel.simulationController = new SimulationController(ControlPanel.comeButton, ControlPanel.backButton, ControlPanel.graphGUI, ControlPanel.currentNodeTextField, ControlPanel.nextNodeListPanel);
+				}
 				update();
 			}
 		}

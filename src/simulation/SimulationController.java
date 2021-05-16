@@ -34,6 +34,7 @@ public class SimulationController{
     
     public SimulationController(JButton comeButton, JButton backButton, GraphGUI graphGUI, JTextField currentNodeTextField, JScrollPane nextNodeListPanel) {
     	this.graphGUI = graphGUI;
+    	
     	GraphGUI.simulationMode = true; // If we turn off simulation mode, set it to false. Remember!
     	graph = graphGUI.contentPanel.getGraph();
     	
@@ -46,6 +47,9 @@ public class SimulationController{
     	
     	passedNodes = new ArrayList<Node>();
     	this.nextNodeList = nextNodeListPanel;
+    	((JPanel)nextNodeList.getViewport().getView()).removeAll();
+    	((JPanel)nextNodeList.getViewport().getView()).repaint();
+    	((JPanel)nextNodeList.getViewport().getView()).revalidate();
     	this.currentNodeTextField = currentNodeTextField;
         currentNode = Node.startNode;
         currentNode.passedSimulationMode = true;

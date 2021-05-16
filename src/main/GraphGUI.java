@@ -161,9 +161,9 @@ public class GraphGUI extends JFrame implements ActionListener {
 						} catch (IOException e) {
 							JOptionPane.showMessageDialog(null, "Error Loading Graph From File !", "Error", JOptionPane.ERROR_MESSAGE);
 						}
-					} else {
+					} else if (option == "Adjacency List") {
 						try {
-							Graph openGraph = Graph.loadFrom(fileIn);
+							Graph openGraph = Graph.readFile(file.toString());
 							contentPanel.setGraph(openGraph);
 							controlPanel.setGraph(openGraph);
 							JOptionPane.showMessageDialog(null, "Loading file successfully !", "Message", JOptionPane.PLAIN_MESSAGE);
