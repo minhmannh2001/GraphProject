@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +29,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	private Graph aGraph;
 	private Node dragNode;
 	private Node dragNode_startEdgeMode;
-	private Edge dragEdge;
 	private Node selectedNode;
 	private Edge selectedEdge;
 	private Point dragPoint;
@@ -88,18 +86,11 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void mouseClicked(MouseEvent event) {
 	    // If this was a double-left-click, then add/select a node or select an edge
 	    if (SwingUtilities.isLeftMouseButton(event)){
-			if (event.getClickCount() == 2) {
+			if (event.getClickCount() == 1) {
 		        Node aNode = aGraph.nodeAt(event.getPoint());
 		        if (aNode == null) {
-		            // We missed a node, now try for an edge midpoint
-		            Edge anEdge = aGraph.edgeAt(event.getPoint());
-		            if (anEdge == null)
-		            {
-		            	String label = aGraph.getNodes().size() + 1 + "";
-		                aGraph.addNode(new Node(label, event.getPoint()));
-		            }
-		            else
-		                anEdge.toggleSelected();
+		        	String label = aGraph.getNodes().size() + 1 + "";
+		        	aGraph.addNode(new Node(label, event.getPoint()));
 		        }
 		        else
 		            aNode.toggleSelected();
@@ -153,9 +144,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         if (aNode != null && SwingUtilities.isLeftMouseButton(event)) {
             // If we pressed on a node, store it
             dragNode = aNode;
+            System.out.println(dragNode);
         }
-        else
-            dragEdge = aGraph.edgeAt(event.getPoint());
         dragPoint = event.getPoint();
     }
 	
@@ -170,10 +160,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		    	int weight;
 		    	try {
 		    		weight = Integer.parseInt(JOptionPane.showInputDialog(this, "Weight:", "Edge Addition", JOptionPane.QUESTION_MESSAGE));
-		    		for (Edge edge : aGraph.getEdges())
-		    			if (edge.isExisted(dragNode, aNode))
-		    				throw new ExistenceException("This edge already exists!");
-		    		aGraph.addEdge(weight, dragNode, aNode);
+		    		if (weight < 0) {
+		    			JOptionPane.showMessageDialog(this, "Invalid value", "Weight is a negative number!", JOptionPane.ERROR_MESSAGE);
+		    		} else {
+			    		for (Edge edge : aGraph.getEdges())
+			    			if (edge.isExisted(dragNode, aNode))
+			    				throw new ExistenceException("This edge already exists!");
+			    		aGraph.addEdge(weight, dragNode, aNode);
+		    		}
 		    	} catch (NumberFormatException e) {
 		    		JOptionPane.showMessageDialog(this, e.getMessage(), "Entered weight is not a number!", JOptionPane.ERROR_MESSAGE);
 		    	} catch (ExistenceException e) {
@@ -187,10 +181,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		    	int weight;
 		    	try {
 		    		weight = Integer.parseInt(JOptionPane.showInputDialog(this, "Weight:", "Edge Addition", JOptionPane.QUESTION_MESSAGE));
-		    		for (Edge edge : aGraph.getEdges())
-		    			if (edge.isExisted(dragNode, aNode))
-		    				throw new ExistenceException("This edge already exists!");
-		    		aGraph.addEdge(weight, dragNode_startEdgeMode, aNode);
+		    		if (weight < 0) {
+		    			JOptionPane.showMessageDialog(this, "Invalid value", "Weight is a negative number!", JOptionPane.ERROR_MESSAGE);
+		    		} else {
+			    		for (Edge edge : aGraph.getEdges())
+			    			if (edge.isExisted(dragNode, aNode))
+			    				throw new ExistenceException("This edge already exists!");
+			    		aGraph.addEdge(weight, dragNode, aNode);
+		    		}
 		    	} catch (NumberFormatException e) {
 		    		JOptionPane.showMessageDialog(this, e.getMessage(), "Entered weight is not a number!", JOptionPane.ERROR_MESSAGE);
 		    	} catch (ExistenceException e) {
@@ -220,19 +218,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	            }
 	            else
 	                elasticEndLocation = event.getPoint();
-	        }   
-	        if (dragEdge != null) {
-	            if (dragEdge.isSelected()) {
-	                dragEdge.getStartNode().getLocation().translate(
-	                        event.getPoint().x - dragPoint.x,
-	                        event.getPoint().y - dragPoint.y);
-	                dragEdge.getEndNode().getLocation().translate(
-	                        event.getPoint().x - dragPoint.x,
-	                        event.getPoint().y - dragPoint.y);
-	                dragPoint = event.getPoint();
-	            }
-	        }
-	       
+	        }      
 	        // We have changed the model, so now update
 	        update();
 	    }
@@ -297,7 +283,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 					for (Edge edge : aGraph.getEdges()) {
 						edge.setPassedInSimulationMode(false);
 					}
-					ControlPanel.simulationController = new SimulationController(ControlPanel.comeButton, ControlPanel.backButton, ControlPanel.graphGUI, ControlPanel.currentNodeTextField, ControlPanel.nextNodeListPanel);
+					// Maybe this line cause errors
+					ControlPanel.simulationController = new SimulationController(ControlPanel.comeButton, ControlPanel.backButton, ControlPanel.graphGUI, ControlPanel.currentNodeTextField, ControlPanel.nextNodeListPanel, ControlPanel.pathTrackingTextField);
 				}
 				update();
 			}
@@ -309,7 +296,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 					for (Edge edge : aGraph.getEdges()) {
 						edge.setPassedInSimulationMode(false);
 					}
-					ControlPanel.simulationController = new SimulationController(ControlPanel.comeButton, ControlPanel.backButton, ControlPanel.graphGUI, ControlPanel.currentNodeTextField, ControlPanel.nextNodeListPanel);
+					// Maybe this line cause errors
+					ControlPanel.simulationController = new SimulationController(ControlPanel.comeButton, ControlPanel.backButton, ControlPanel.graphGUI, ControlPanel.currentNodeTextField, ControlPanel.nextNodeListPanel, ControlPanel.pathTrackingTextField);
 				}
 				update();
 			}

@@ -1,5 +1,8 @@
 package main;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,15 +22,26 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.kingaspx.util.BrowserUtil;
+import com.kingaspx.version.Version;
+import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.events.FinishLoadingEvent;
+import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
+import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 import basiccomponentmodel.Edge;
 import basiccomponentmodel.Node;
@@ -50,10 +64,10 @@ public class GraphGUI extends JFrame implements ActionListener {
 		super(title);
 		contentPanel = new ContentPanel(graph);
 		controlPanel = new ControlPanel(graph, this);
-		this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
 		this.add(contentPanel);
-		this.setResizable(false);
 		this.add(controlPanel);
+		this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
+		this.setResizable(false);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(1000, 600);
 		// Make the window appear in middle of screen
@@ -62,7 +76,9 @@ public class GraphGUI extends JFrame implements ActionListener {
 		this.setJMenuBar(menuBar);
 		JMenu fileMenu = new JMenu("File");
 		JMenu helpMenu = new JMenu("Help");
+		JMenu modeMenu = new JMenu("Mode");
 		menuBar.add(fileMenu);
+		menuBar.add(modeMenu);
 		menuBar.add(helpMenu);
 		JMenuItem loadMenuItem = new JMenuItem("Open");
 		loadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
@@ -92,6 +108,18 @@ public class GraphGUI extends JFrame implements ActionListener {
 		fileMenu.add(screenCaptureItem);
 		fileMenu.add(closeMenuButton);
 		
+		JMenuItem findPathMode = new JMenuItem("Find Path");
+		findPathMode.addActionListener(this);
+		JMenuItem simulationModeMenuItem = new JMenuItem("Simulation");
+		simulationModeMenuItem.addActionListener(this);
+		JMenuItem mapMode = new JMenuItem("Map");
+		mapMode.addActionListener(this);
+		JMenuItem starRecognition = new JMenuItem("Star Recognition");
+		starRecognition.addActionListener(this);
+		modeMenu.add(findPathMode);
+		modeMenu.add(simulationModeMenuItem);
+		modeMenu.add(mapMode);
+		modeMenu.add(starRecognition);
 		
 		JMenuItem helpMenuItem = new JMenuItem("Help");
 		helpMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -204,7 +232,7 @@ public class GraphGUI extends JFrame implements ActionListener {
         		file = new File(fileChooser.getSelectedFile().getAbsolutePath());
         		
 	        	Rectangle rect = contentPanel.getBounds();
-	        	 
+	        	
 	            try {
 	                String format = "png";
 	                //String fileName = "ScreenCapture" + "." + format;
@@ -224,6 +252,45 @@ public class GraphGUI extends JFrame implements ActionListener {
 			controlPanel.setGraph(newGraph);
 			JOptionPane.showMessageDialog(null, "                           New graph!", "Message", JOptionPane.PLAIN_MESSAGE);
 		
+        } else if (event.getActionCommand().equals("Map")) {
+        	this.remove(contentPanel);
+        	this.remove(controlPanel);
+        	
+        	SwingUtilities.invokeLater(() -> {
+        		JPanel controlPanel = new JPanel();
+        		controlPanel.setLayout(null);
+        		JLabel mapLabel = new JLabel();
+        		mapLabel.setText("MAP SELECTION");
+        		mapLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        		mapLabel.setBounds(25, 25, 200, 40);
+        		JTextField searchTextField = new JTextField();
+        		searchTextField.setFont(new java.awt.Font(Font.DIALOG_INPUT, Font.TRUETYPE_FONT, 16));
+        		searchTextField.setText("Search here...");
+        		controlPanel.add(mapLabel);
+            	controlPanel.setPreferredSize(new Dimension(200, 500));
+            	BrowserUtil.setVersion(Version.V6_22);
+            	Browser browser = new Browser();
+            	BrowserView view = new BrowserView(browser);
+
+            	browser.addLoadListener(new LoadAdapter() {
+            		@Override
+            		public void onFinishLoadingFrame(FinishLoadingEvent event) {
+            			event.getBrowser().setZoomLevel(-2);
+            		}
+        		});
+            	
+            	browser.loadURL("C:\\Users\\nguye\\OneDrive\\Máy tính\\simple_map.html");
+                //JFrame frame = new JFrame("Google Maps");
+                this.add(view, BorderLayout.CENTER);
+                this.add(controlPanel, BorderLayout.EAST);
+                //this.setSize(800, 500);
+                this.setVisible(true);
+
+            });
+        	
+        	this.repaint();
+        	this.revalidate();
+        	System.out.println("Hello");
         }
 		
 		

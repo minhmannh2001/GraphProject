@@ -88,16 +88,16 @@ public class Graph {
 	}
 	
 	public static Graph example() {
-		Graph myMap = new Graph("Ontario and Quebec");
+		Graph myMap = new Graph("Graph");
 		Node     ottawa, toronto, kingston, montreal, tokyo, hanoi, tphcm;
 		
-		myMap.addNode(ottawa = new Node("1", new Point(250,100)));
-	    myMap.addNode(toronto = new Node("2", new Point(100,170)));
-	    myMap.addNode(kingston = new Node("3", new Point(180,110)));
-	    myMap.addNode(montreal = new Node("4", new Point(300,90)));
-	    myMap.addNode(tokyo = new Node("5", new Point(400, 300)));
-	    myMap.addNode(hanoi = new Node("6", new Point(350, 200)));
-	    myMap.addNode(tphcm = new Node("7", new Point(430, 230))); 
+		myMap.addNode(ottawa = new Node("1", new Point(49, 106)));
+	    myMap.addNode(toronto = new Node("2", new Point(115, 302)));
+	    myMap.addNode(kingston = new Node("3", new Point(249, 188)));
+	    myMap.addNode(montreal = new Node("4", new Point(349, 77)));
+	    myMap.addNode(tokyo = new Node("5", new Point(475, 189)));
+	    myMap.addNode(hanoi = new Node("6", new Point(346, 343)));
+	    myMap.addNode(tphcm = new Node("7", new Point(572, 277))); 
 	    myMap.addEdge(2 , ottawa, toronto);
 	    myMap.addEdge(3 , ottawa, montreal);
 	    myMap.addEdge(4 ,ottawa, kingston);

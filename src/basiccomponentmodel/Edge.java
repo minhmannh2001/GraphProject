@@ -22,9 +22,9 @@ public class Edge {
 	private Node startNode, endNode;
 	private boolean selected;
 	public boolean isNextEdgeSimulationMode = false;
-	private boolean passedInSimulationMode; // Use to check the way to end Node by Dijkstra in Simulation Mode
+	private boolean passedInDijkstraSimulationMode; // Use to check the way to end Node by Dijkstra in Simulation Mode
 	public void setPassedInSimulationMode(boolean state) {
-		this.passedInSimulationMode = state;
+		this.passedInDijkstraSimulationMode = state;
 	}
 	
 	public void setPassedSimulationMode(Node n1, Node n2) {
@@ -112,64 +112,18 @@ public class Edge {
 		yA = yA + t * (xA - xB) / dis;
 		yB = yB + t * (xA - xB) / dis;		
 
-		if (selected) {// draw red line
-			g2.setColor(Color.RED);
-			g2.setStroke(new BasicStroke(10));
-			g2.draw(line);
-			Font font = new Font("Arial", Font.BOLD, 15);
-			g2.setFont(font);
-			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-			drawArrowHead(g2, startPoint, endPoint, Color.RED);
-		} else if (passed) { 
-			aPen.setColor(Color.RED);
-			g2.setColor(Color.RED);
-			g2.setStroke(new BasicStroke(5));
-			g2.draw(line);
-			Font font = new Font("Arial", Font.BOLD, 15);
-			g2.setFont(font);
-			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-			drawArrowHead(g2, startPoint, endPoint, Color.RED);
-		} else if (this.passedSimulation == true && GraphGUI.simulationMode == true) {
-			aPen.setColor(Color.RED);
-			g2.setColor(Color.RED);
-			g2.setStroke(new BasicStroke(5));
-			g2.draw(line);
-			Font font = new Font("Arial", Font.BOLD, 15);
-			g2.setFont(font);
-			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-			drawArrowHead(g2, startPoint, endPoint, Color.RED);
-		} else if (this.passedInSimulationMode == true && isNextEdgeSimulationMode == true) { 
-			/*// Draw dashed line between two nodes
-			// Create a copy of the Graphics instance
-			Graphics2D g2d = (Graphics2D) aPen.create();
-
-			// Set the stroke of the copy, not the original 
-			Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-			                                  0, new float[]{9}, 0);
-			g2d.setColor(Color.RED);
-			g2d.setStroke(dashed);
-			g2d.draw(line);
-
-			// Get rid of the copy
-			g2d.dispose();
-			aPen.setColor(Color.RED);
-			g2.setColor(Color.RED);
-			g2.setStroke(new BasicStroke(5));
-			//g2.draw(line);
-			Font font = new Font("Arial", Font.BOLD, 15);
-			g2.setFont(font);
-			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-			drawArrowHead(g2, startPoint, endPoint, Color.RED);*/
-			g2.setColor(new Color(36, 36, 36));
-			// Draw a black line from the center of the startNode to the center of the
-			// endNode
-			g2.draw(line);
-			Font font = new Font("Arial", Font.BOLD, 15);
-			g2.setFont(font);
-			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-			drawArrowHead(g2, startPoint, endPoint, new Color(36));
-		} else if (GraphGUI.simulationMode == true) {
-			if (isNextEdgeSimulationMode == true && passedInSimulationMode == false) {
+		// We need to fix these draw conditions
+		if (GraphGUI.simulationMode == false) { // If we aren't in simulation mode, we just need to find the shortest path
+			if (passed) { 
+				aPen.setColor(Color.RED);
+				g2.setColor(Color.RED);
+				g2.setStroke(new BasicStroke(5));
+				g2.draw(line);
+				Font font = new Font("Arial", Font.BOLD, 15);
+				g2.setFont(font);
+				drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+				drawArrowHead(g2, startPoint, endPoint, Color.RED);
+			} else {
 				g2.setColor(new Color(36, 36, 36));
 				// Draw a black line from the center of the startNode to the center of the
 				// endNode
@@ -178,49 +132,74 @@ public class Edge {
 				g2.setFont(font);
 				drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
 				drawArrowHead(g2, startPoint, endPoint, new Color(36));
-			} else if (isNextEdgeSimulationMode == false && passedInSimulationMode == true) {
-				// Draw dashed line between two nodes
-				// Create a copy of the Graphics instance
-				Graphics2D g2d = (Graphics2D) aPen.create();
-
-				// Set the stroke of the copy, not the original 
-				Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-				g2d.setColor(new Color(255, 204, 203)); // light red
-				g2d.setStroke(dashed);
-				g2d.draw(line);
-
-				// Get rid of the copy
-				g2d.dispose();
-				aPen.setColor(new Color(255, 204, 203));
-				g2.setColor(new Color(255, 204, 203));
+			}
+		} else if (GraphGUI.simulationMode == true) { // If we in simulation, draw for simulation mode
+			if (this.passedSimulation == true) {
+				System.out.println(this);
+				System.out.println(this.passedSimulation);
+				aPen.setColor(Color.RED);
+				g2.setColor(Color.RED);
 				g2.setStroke(new BasicStroke(5));
-				//g2.draw(line);
-				Font font = new Font("Arial", Font.BOLD, 15);
-				g2.setFont(font);
-				drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-				drawArrowHead(g2, startPoint, endPoint, new Color(255, 204, 203));
-			} else {
-				g2.setColor(new Color(211, 211, 211)); // light grey
-				// Draw a black line from the center of the startNode to the center of the
-				// endNode
 				g2.draw(line);
 				Font font = new Font("Arial", Font.BOLD, 15);
 				g2.setFont(font);
 				drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-				drawArrowHead(g2, startPoint, endPoint, new Color(211, 211, 211));
+				drawArrowHead(g2, startPoint, endPoint, Color.RED);
+			} else if (this.passedSimulation == false) {
+				if (this.passedInDijkstraSimulationMode == true && isNextEdgeSimulationMode == true) { 
+					g2.setColor(new Color(36, 36, 36)); // Light Black
+					// Draw a black line from the center of the startNode to the center of the
+					// endNode
+					g2.draw(line);
+					Font font = new Font("Arial", Font.BOLD, 15);
+					g2.setFont(font);
+					drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+					drawArrowHead(g2, startPoint, endPoint, new Color(36));
+				} else if (this.passedInDijkstraSimulationMode == true && isNextEdgeSimulationMode == false){
+					// Draw dashed line between two nodes
+					// Create a copy of the Graphics instance
+					Graphics2D g2d = (Graphics2D) aPen.create();
+
+					// Set the stroke of the copy, not the original 
+					Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+					g2d.setColor(new Color(255, 204, 203)); // light red
+					g2d.setStroke(dashed);
+					g2d.draw(line);
+
+					// Get rid of the copy
+					g2d.dispose();
+					aPen.setColor(new Color(255, 204, 203));
+					g2.setColor(new Color(255, 204, 203));
+					g2.setStroke(new BasicStroke(5));
+					//g2.draw(line);
+					Font font = new Font("Arial", Font.BOLD, 15);
+					g2.setFont(font);
+					drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+					drawArrowHead(g2, startPoint, endPoint, new Color(255, 204, 203));
+				} else if (this.passedInDijkstraSimulationMode == false && isNextEdgeSimulationMode == true) {
+					g2.setColor(new Color(36, 36, 36)); // Light Black
+					// Draw a black line from the center of the startNode to the center of the
+					// endNode
+					g2.draw(line);
+					Font font = new Font("Arial", Font.BOLD, 15);
+					g2.setFont(font);
+					drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+					drawArrowHead(g2, startPoint, endPoint, new Color(36));
+				} else if (this.passedInDijkstraSimulationMode == false && isNextEdgeSimulationMode == false) {
+					g2.setColor(new Color(211, 211, 211)); // light grey
+					// Draw a black line from the center of the startNode to the center of the
+					// endNode
+					g2.draw(line);
+					Font font = new Font("Arial", Font.BOLD, 15);
+					g2.setFont(font);
+					drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
+					drawArrowHead(g2, startPoint, endPoint, new Color(211, 211, 211));
+				}
 			}
-			
-		} else {
-			g2.setColor(new Color(36, 36, 36));
-			// Draw a black line from the center of the startNode to the center of the
-			// endNode
-			g2.draw(line);
-			Font font = new Font("Arial", Font.BOLD, 15);
-			g2.setFont(font);
-			drawRotateString(g2, (xA + 2 * xB) / 3, (yA + 2 * yB) / 3, theta, weightInStr);
-			drawArrowHead(g2, startPoint, endPoint, new Color(36));
 		}
 	}
+		
+		
 
 	private void drawArrowHead(Graphics2D g2, Point2D startPoint, Point2D endPoint, Color color) {
 		Path2D arrow = new Path2D.Double();
